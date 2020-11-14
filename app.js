@@ -110,6 +110,9 @@ function generateConvo(s, t) {
     currentStatement = statement;
     toSend = [statement, ''];
 
+    //TTS statement
+    say.speak(statement, 'Victoria');
+
     //save the tags used to generate this round
     pastTopics = tags;
     console.log(pastTopics);
@@ -150,6 +153,9 @@ function generateConvo(s, t) {
     statement = statement.replace('.,', '. ');
     currentStatement = statement;
     toSend = ['', statement];
+
+    //TTS statement
+    say.speak(statement, 'Alex');
 
     //save the tags used to generate this round
     pastTopics = tags;
