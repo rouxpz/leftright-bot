@@ -9,6 +9,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(express.static('public'));
 
+//TO DO:
 //automate back and forth discussion between bots
 //allow user to interrupt and change subject
 //sort content by metadata (look for more content)
@@ -22,17 +23,12 @@ let leftData = JSON.parse(leftFile);
 let rightCorpus = '';
 let leftCorpus = '';
 
-let currentTopic = 'election';
+let currentStatement = '';
+let currentTopic = "election";
+let currentTopics = ['election'];
+let pastTopics = ['election'];
 
 let toggle = false;
-
-// for (var i = 0; i < rightData.length; i++) {
-//   rightCorpus += rightData[i].text;
-// }
-//
-// for (var i = 0; i < leftData.length; i++) {
-//   leftCorpus += leftData[i].text;
-// }
 
 
 app.get('/', (req, res) => {
@@ -42,7 +38,6 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
   let side;
-  // let topics = [];
 
   //determine side
   if (toggle == false) {
@@ -54,12 +49,12 @@ app.post('/', (req, res) => {
   }
 
   //parse current fragment for topics, either from last thing said or from user input
-  // console.log(currentTopics);
+  currentStatement = currentStatement.toLowerCase().replace('.', '').replace(',', '');
+  currentStatement = currentStatement.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+  currentTopics = currentStatement.split(' ');
 
-  let dataToUse = generateConvo(side, currentTopic);
-  // console.log(dataToUse);
+  let dataToUse = generateConvo(side, currentTopics);
 
-  // console.log(rightDia);
   res.render('index', {leftData:dataToUse[1], rightData:dataToUse[0]});
 
 })
@@ -68,17 +63,32 @@ function generateConvo(s, t) {
 
   let toSend = [];
   let rm = rita.RiMarkov(3);
-  console.log(t);
+  // console.log(t);
 
   if (s == "right") {
+    let toAdd = [];
+    let tags = [];
     rightCorpus = '';
     for (var i = 0; i < rightData.length; i++) {
-      if (rightData[i].metadata.includes(t) == true) {
-        // toAdd.push(rightData[i].text);
-        rightCorpus += rightData[i].text;
+      for (var j = 0; j < t.length; j++) {
+        if (rightData[i].metadata.includes(t[j]) == true && tags.includes(t[j]) == false) {
+          tags.push(t[j]);
+          console.log(tags.length);
+        }
+      }
+
+      if (tags.length < 1) {
+        tags = pastTopics;
+      }
+
+      for (j = 0; j < tags.length; j++) {
+        if (rightData[i].metadata.includes(tags[j]) == true && toAdd.includes(rightData[i].text) == false) {
+          toAdd.push(rightData[i].text);
+        }
       }
     }
-    // console.log(toAdd);
+    console.log("number of articles: " + toAdd.length);
+    rightCorpus  = toAdd.join(' ');
     rm.loadText(rightCorpus);
     let sentences = rm.generateSentences(2);
     let statement = sentences.join();
@@ -86,10 +96,13 @@ function generateConvo(s, t) {
     currentStatement = statement;
     toSend = [statement, ''];
 
+    pastTopics = tags;
+    console.log(pastTopics);
+
   } else if (s == "left") {
     leftCorpus = '';
     for (var i = 0; i < leftData.length; i++) {
-      if (leftData[i].metadata.includes(t) == true) {
+      if (leftData[i].metadata.includes('election') == true) {
         // toAdd.push(rightData[i].text);
         leftCorpus += leftData[i].text;
       }
