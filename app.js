@@ -11,8 +11,6 @@ app.use(express.static('public'));
 
 //TO DO:
 //automate back and forth discussion between bots
-//allow user to interrupt and change subject
-//sort content by metadata (look for more content)
 
 let leftFile = fs.readFileSync('left_test.json');
 let rightFile = fs.readFileSync('right_test.json');
@@ -49,10 +47,19 @@ app.post('/', (req, res) => {
   }
 
   //parse current fragment for topics, either from last thing said or from user input
+  if (req.body.userInput != '') {
+    currentStatement = req.body.userInput;
+  } else {
+    currentStatement = currentStatement;
+  }
+
+  console.log(currentStatement);
   currentStatement = currentStatement.toLowerCase().replace('.', '').replace(',', '');
   currentStatement = currentStatement.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
   currentTopics = currentStatement.split(' ');
+  // console.log(currentTopics);
 
+  //send to function that generates new text
   let dataToUse = generateConvo(side, currentTopics);
 
   res.render('index', {leftData:dataToUse[1], rightData:dataToUse[0]});
@@ -60,15 +67,18 @@ app.post('/', (req, res) => {
 })
 
 function generateConvo(s, t) {
-
+  let toAdd;
+  let tags;
   let toSend = [];
-  let rm = rita.RiMarkov(3);
+  let rm = rita.RiMarkov(4);
   // console.log(t);
 
   if (s == "right") {
-    let toAdd = [];
-    let tags = [];
+    toAdd = [];
+    tags = [];
     rightCorpus = '';
+
+    //check tags sent from last statement against the text metadata
     for (var i = 0; i < rightData.length; i++) {
       for (var j = 0; j < t.length; j++) {
         if (rightData[i].metadata.includes(t[j]) == true && tags.includes(t[j]) == false) {
@@ -77,10 +87,12 @@ function generateConvo(s, t) {
         }
       }
 
+      //keep the same tags if there's no overlap
       if (tags.length < 1) {
         tags = pastTopics;
       }
 
+      //filter out articles based on metadata
       for (j = 0; j < tags.length; j++) {
         if (rightData[i].metadata.includes(tags[j]) == true && toAdd.includes(rightData[i].text) == false) {
           toAdd.push(rightData[i].text);
@@ -89,6 +101,8 @@ function generateConvo(s, t) {
     }
     console.log("number of articles: " + toAdd.length);
     rightCorpus  = toAdd.join(' ');
+
+    //generate new text
     rm.loadText(rightCorpus);
     let sentences = rm.generateSentences(2);
     let statement = sentences.join();
@@ -96,23 +110,50 @@ function generateConvo(s, t) {
     currentStatement = statement;
     toSend = [statement, ''];
 
+    //save the tags used to generate this round
     pastTopics = tags;
     console.log(pastTopics);
 
   } else if (s == "left") {
+    toAdd = [];
+    tags = [];
     leftCorpus = '';
+
+    //check tags sent from last statement against the text metadata
     for (var i = 0; i < leftData.length; i++) {
-      if (leftData[i].metadata.includes('election') == true) {
-        // toAdd.push(rightData[i].text);
-        leftCorpus += leftData[i].text;
+      for (var j = 0; j < t.length; j++) {
+        if (leftData[i].metadata.includes(t[j]) == true && tags.includes(t[j]) == false) {
+          tags.push(t[j]);
+          console.log(tags.length);
+        }
+      }
+
+      //keep the same tags if there's no overlap
+      if (tags.length < 1) {
+        tags = pastTopics;
+      }
+
+      //filter out articles based on metadata
+      for (j = 0; j < tags.length; j++) {
+        if (leftData[i].metadata.includes(tags[j]) == true && toAdd.includes(leftData[i].text) == false) {
+          toAdd.push(leftData[i].text);
+        }
       }
     }
+    console.log("number of articles: " + toAdd.length);
+    leftCorpus  = toAdd.join(' ');
+
+    //generate new text
     rm.loadText(leftCorpus);
     let sentences = rm.generateSentences(2);
     let statement = sentences.join();
     statement = statement.replace('.,', '. ');
     currentStatement = statement;
     toSend = ['', statement];
+
+    //save the tags used to generate this round
+    pastTopics = tags;
+    console.log(pastTopics);
   }
 
   return toSend;
