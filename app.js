@@ -12,6 +12,9 @@ app.use(express.static('public'));
 
 //TO DO:
 //automate back and forth discussion between bots
+//client-side TTS
+//affect levels
+
 let urlBase = 'https://roopavasudevan.com/dump/bot-json/';
 let leftFiles = ['climate-change-left.json', 'covid-left.json', 'immigration-left.json'];
 let rightFiles = ['climate-change-right.json', 'covid-right.json', 'immigration-right.json'];
