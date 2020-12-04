@@ -1,5 +1,5 @@
 const express = require('express');
-const say = require('say');
+// const say = require('say');
 const fs = require('fs');
 const request = require('request');
 const app = express();
@@ -146,7 +146,7 @@ function generateConvo(s, t) {
 
     //TTS statement
     // say.speak(statement, 'Victoria');
-    say.speak(statement);
+    // say.speak(statement);
 
     //save the tags used to generate this round
     pastTopics = tags;
@@ -200,7 +200,7 @@ function generateConvo(s, t) {
 
     //TTS statement
     // say.speak(statement, 'Alex');
-    say.speak(statement);
+    // say.speak(statement);
 
     //save the tags used to generate this round
     pastTopics = tags;
