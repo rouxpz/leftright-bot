@@ -145,7 +145,8 @@ function generateConvo(s, t) {
     toSend = [statement, ''];
 
     //TTS statement
-    say.speak(statement, 'Victoria');
+    // say.speak(statement, 'Victoria');
+    say.speak(statement);
 
     //save the tags used to generate this round
     pastTopics = tags;
@@ -198,7 +199,8 @@ function generateConvo(s, t) {
     toSend = ['', statement];
 
     //TTS statement
-    say.speak(statement, 'Alex');
+    // say.speak(statement, 'Alex');
+    say.speak(statement);
 
     //save the tags used to generate this round
     pastTopics = tags;
