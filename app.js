@@ -1,5 +1,5 @@
 const express = require('express');
-const say = require('say');
+// const say = require('say');
 const fs = require('fs');
 const request = require('request');
 const app = express();
@@ -12,9 +12,12 @@ app.use(express.static('public'));
 
 //TO DO:
 //automate back and forth discussion between bots
+//client-side TTS
+//affect levels
+
 let urlBase = 'https://roopavasudevan.com/dump/bot-json/';
-let leftFiles = ['cc_left.json', 'covid-left.json', 'immigration-left.json'];
-let rightFiles = ['cc-right.json', 'covid-right.json', 'immigration-right.json'];
+let leftFiles = ['climate-change-left.json', 'covid-left.json', 'immigration-left.json'];
+let rightFiles = ['climate-change-right.json', 'covid-right.json', 'immigration-right.json'];
 
 let rightData = [];
 let leftData = [];
@@ -96,7 +99,7 @@ function generateConvo(s, t) {
   let toAdd;
   let tags;
   let toSend = [];
-  let rm = rita.RiMarkov(4);
+  let rm = rita.RiMarkov(5);
   // console.log(t);
 
   if (s == "right") {
@@ -145,7 +148,8 @@ function generateConvo(s, t) {
     toSend = [statement, ''];
 
     //TTS statement
-    say.speak(statement, 'Victoria');
+    // say.speak(statement, 'Victoria');
+    // say.speak(statement);
 
     //save the tags used to generate this round
     pastTopics = tags;
@@ -198,7 +202,8 @@ function generateConvo(s, t) {
     toSend = ['', statement];
 
     //TTS statement
-    say.speak(statement, 'Alex');
+    // say.speak(statement, 'Alex');
+    // say.speak(statement);
 
     //save the tags used to generate this round
     pastTopics = tags;
