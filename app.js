@@ -13,8 +13,8 @@ app.use(express.static('public'));
 //TO DO:
 //automate back and forth discussion between bots
 let urlBase = 'https://roopavasudevan.com/dump/bot-json/';
-let leftFiles = ['cc_left.json', 'covid-left.json', 'immigration-left.json'];
-let rightFiles = ['cc-right.json', 'covid-right.json', 'immigration-right.json'];
+let leftFiles = ['climate-change-left.json', 'covid-left.json', 'immigration-left.json'];
+let rightFiles = ['climate-change-right.json', 'covid-right.json', 'immigration-right.json'];
 
 let rightData = [];
 let leftData = [];
@@ -96,7 +96,7 @@ function generateConvo(s, t) {
   let toAdd;
   let tags;
   let toSend = [];
-  let rm = rita.RiMarkov(4);
+  let rm = rita.RiMarkov(5);
   // console.log(t);
 
   if (s == "right") {
