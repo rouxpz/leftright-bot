@@ -1,6 +1,7 @@
 const express = require('express');
 const say = require('say');
 const fs = require('fs');
+const request = require('request');
 const app = express();
 const port = 3000;
 const bodyParser = require('body-parser');
@@ -11,12 +12,37 @@ app.use(express.static('public'));
 
 //TO DO:
 //automate back and forth discussion between bots
+let urlBase = 'https://roopavasudevan.com/dump/bot-json/';
+let leftFiles = ['cc_left.json', 'covid-left.json', 'immigration-left.json'];
+let rightFiles = ['cc-right.json', 'covid-right.json', 'immigration-right.json'];
 
-let leftFile = fs.readFileSync('left_test.json');
-let rightFile = fs.readFileSync('right_test.json');
+let rightData = [];
+let leftData = [];
 
-let rightData = JSON.parse(rightFile);
-let leftData = JSON.parse(leftFile);
+for (var i = 0; i < leftFiles.length; i++) {
+  request({
+    url: urlBase + leftFiles[i],
+    json: true
+  }, function(error, response, body){
+    if (!error && response.statusCode === 200) {
+      // console.log(body.data.length);
+      leftData = leftData.concat(body.data);
+      console.log("left data length: " + leftData.length)
+    }
+  })
+}
+
+for (var i = 0; i < rightFiles.length; i++) {
+  request({
+    url: urlBase + rightFiles[i],
+    json: true
+  }, function(error, response, body){
+    if (!error && response.statusCode === 200) {
+      rightData = rightData.concat(body.data);
+      console.log("right data length: " + rightData.length)
+    }
+  })
+}
 
 let rightCorpus = '';
 let leftCorpus = '';
@@ -78,6 +104,8 @@ function generateConvo(s, t) {
     tags = [];
     rightCorpus = '';
 
+    console.log("tags refreshed at " + tags.length);
+
     //check tags sent from last statement against the text metadata
     for (var i = 0; i < rightData.length; i++) {
       for (var j = 0; j < t.length; j++) {
@@ -90,20 +118,26 @@ function generateConvo(s, t) {
       //keep the same tags if there's no overlap
       if (tags.length < 1) {
         tags = pastTopics;
+      } else {
+        pastTopics = [];
+        // console.log("past topics: " + pastTopics.length);
       }
 
       //filter out articles based on metadata
       for (j = 0; j < tags.length; j++) {
         if (rightData[i].metadata.includes(tags[j]) == true && toAdd.includes(rightData[i].text) == false) {
           toAdd.push(rightData[i].text);
+
+          // console.log("adding to corpus...");
+          rm.loadText(rightData[i].text);
         }
       }
     }
     console.log("number of articles: " + toAdd.length);
     rightCorpus  = toAdd.join(' ');
 
-    //generate new text
-    rm.loadText(rightCorpus);
+
+    console.log("writing sentences...");
     let sentences = rm.generateSentences(2);
     let statement = sentences.join();
     statement = statement.replace('.,', '. ');
@@ -122,32 +156,41 @@ function generateConvo(s, t) {
     tags = [];
     leftCorpus = '';
 
+    // console.log("tags refreshed at " + tags.length);
+
     //check tags sent from last statement against the text metadata
     for (var i = 0; i < leftData.length; i++) {
       for (var j = 0; j < t.length; j++) {
         if (leftData[i].metadata.includes(t[j]) == true && tags.includes(t[j]) == false) {
           tags.push(t[j]);
-          console.log(tags.length);
+          // console.log(tags.length);
         }
       }
 
       //keep the same tags if there's no overlap
       if (tags.length < 1) {
         tags = pastTopics;
+      } else {
+        pastTopics = []
+        // console.log("past topics: " + pastTopics.length);
       }
 
       //filter out articles based on metadata
       for (j = 0; j < tags.length; j++) {
         if (leftData[i].metadata.includes(tags[j]) == true && toAdd.includes(leftData[i].text) == false) {
           toAdd.push(leftData[i].text);
+
+          // console.log("adding to corpus...");
+          rm.loadText(leftData[i].text);
         }
       }
     }
     console.log("number of articles: " + toAdd.length);
-    leftCorpus  = toAdd.join(' ');
+    // leftCorpus  = toAdd.join(' ');
 
     //generate new text
-    rm.loadText(leftCorpus);
+    // rm.loadText(leftCorpus);
+    console.log("writing sentences...");
     let sentences = rm.generateSentences(2);
     let statement = sentences.join();
     statement = statement.replace('.,', '. ');
