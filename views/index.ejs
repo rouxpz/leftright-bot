@@ -3,18 +3,19 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="stylesheets/style.css">
+    <script type="text/javascript" src="javascripts/mespeak/mespeak.js"></script>
     <title>Left/Right Bot Demo</title>
   </head>
-  <body>
+  <body onload = "botSpeak()">
   <div class="parent">
     <div id="leftBot">
       <h1>left bot</h1>
-      <div class="leftData"><%= leftData %></div>
+      <div id="leftData"><%= leftData %></div>
     </div>
 
       <div id="rightBot">
         <h1>right bot</h1>
-        <div class="rightData"><%= rightData %></div>
+        <div id="rightData"><%= rightData %></div>
       </div>
   </div>
   <div id="footer">
@@ -26,8 +27,20 @@
   </div>
 
   <script type="text/javascript">
-    function testFunction() {
-      alert("submitted");
+    meSpeak.loadVoice('en/en-us');
+
+    function botSpeak() {
+      var leftVoice = document.getElementById('leftData').innerHTML;
+      var rightVoice = document.getElementById('rightData').innerHTML;
+
+      if (leftVoice != '') {
+        meSpeak.speak(leftVoice);
+      } else if (rightVoice != '') {
+        meSpeak.speak(rightVoice, { variant: "f1"});
+      }
+      //
+      // console.log("left: " + leftVoice);
+      // console.log("right: " + rightVoice);
     }
   </script>
   </body>
