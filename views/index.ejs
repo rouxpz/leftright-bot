@@ -7,6 +7,9 @@
     <title>Left/Right Bot Demo</title>
   </head>
   <body onload = "botSpeak()">
+  <div id="welcome">
+    <p>Welcome to the Left and Right bot. Please be patient while content queues, in order to provide a more seamless experience. The bot will load when there has been enough content generated to continue.</p>
+  </div>
   <div class="parent">
     <div id="leftBot">
       <h1>left bot</h1>
@@ -19,15 +22,40 @@
       </div>
   </div>
   <div id="footer">
-    <h1>User Input</h1>
     <form class="" action="/" method="post">
+      <input id="submit" type="submit" name="" value="Advance Conversation">
+      <p>Contribute to the conversation:</p>
       <input type="textbox" size="50" height="50" name="userInput" value=""><br>
-      <input type="submit" name="" value="Next">
     </form>
   </div>
 
   <script type="text/javascript">
     meSpeak.loadVoice('en/en-us');
+    console.log(sessionStorage.getItem('hasLoaded'));
+
+    if(sessionStorage.getItem('hasLoaded') == 'true') {
+      var loadScreen = document.getElementsByClassName('parent');
+
+      for (var i = 0; i < loadScreen.length; i++) {
+        loadScreen[i].style.display = "flex";
+      }
+
+      document.getElementById('footer').style.display = "block";
+      document.getElementById('welcome').style.display = "none";
+    } else {
+      setTimeout(function() {
+        var loadScreen = document.getElementsByClassName('parent');
+
+        for (var i = 0; i < loadScreen.length; i++) {
+          loadScreen[i].style.display = "flex";
+        }
+
+        document.getElementById('footer').style.display = "block";
+        document.getElementById('welcome').style.display = "none";
+        sessionStorage.setItem('hasLoaded', 'true');
+        console.log(sessionStorage.getItem('hasLoaded'));
+      }, 6000);
+    }
 
     function botSpeak() {
       var leftVoice = document.getElementById('leftData').innerHTML;

@@ -3,6 +3,7 @@ const express = require('express');
 const fs = require('fs');
 const request = require('request');
 const app = express();
+const { Client } = require('pg');
 const port = 3000;
 const bodyParser = require('body-parser');
 const rita = require('rita');
@@ -12,8 +13,13 @@ app.use(express.static('public'));
 
 //TO DO:
 //automate back and forth discussion between bots
-//client-side TTS
 //affect levels
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL || 'postgres://localhost:5432/template1'
+});
+
+client.connect();
 
 let urlBase = 'https://roopavasudevan.com/dump/bot-json/';
 let leftFiles = ['climate-change-left.json', 'covid-left.json', 'immigration-left.json'];
@@ -21,6 +27,13 @@ let rightFiles = ['climate-change-right.json', 'covid-right.json', 'immigration-
 
 let rightData = [];
 let leftData = [];
+
+let loading = true;
+
+//get today's date for the conversation
+let dateOb = new Date();
+let todaysDate = dateOb.getFullYear() + "-" + (dateOb.getMonth() + 1) + "-" + dateOb.getDate();
+console.log(todaysDate);
 
 for (var i = 0; i < leftFiles.length; i++) {
   request({
@@ -57,10 +70,38 @@ let pastTopics = ['election'];
 
 let toggle = false;
 
+let order = 0;
+let queue = 0;
+
 
 app.get('/', (req, res) => {
   // setTimeout(myFunc, 1500, 'funky');
-  res.render('index', {leftData:'', rightData:''});
+  if (loading == true) {
+    res.render('index', {leftData:'', rightData:''});
+    let loadQueue = setInterval(() => {
+      let side;
+
+      if (toggle) {
+        side = 'left';
+      } else {
+        side = 'right';
+      }
+
+      let toLoad = generateConvo(side, currentTopics);
+      // console.log(toLoad);
+      client.query('INSERT INTO lrbot(left_text, right_text, id, generated_on) VALUES($1, $2, $3, $4)', [toLoad[1], toLoad[0], order, todaysDate]);
+      toggle = !toggle;
+      order = order + 1;
+    }, 2000);
+    setTimeout(() => {
+      clearInterval(loadQueue);
+      console.log("stopped");
+      console.log(toggle);
+      loading = false;
+    }, 6000);
+  } else {
+    res.render('index', {leftData:'', rightData:''});
+  }
 });
 
 app.post('/', (req, res) => {
@@ -89,9 +130,18 @@ app.post('/', (req, res) => {
   // console.log(currentTopics);
 
   //send to function that generates new text
-  let dataToUse = generateConvo(side, currentTopics);
+  let dataToAdd = generateConvo(side, currentTopics);
+  client.query('INSERT INTO lrbot(left_text, right_text, id, generated_on) VALUES($1, $2, $3, $4)', [dataToAdd[1], dataToAdd[0], order, todaysDate]);
+  order = order + 1;
 
-  res.render('index', {leftData:dataToUse[1], rightData:dataToUse[0]});
+  client.query("SELECT * FROM lrbot WHERE generated_on = $1 AND id = $2", [todaysDate, queue], (err, result) => {
+    if (err) throw err;
+    let output = result.rows[0];
+    // console.log(output.left_text);
+    console.log(loading);
+    res.render('index', {leftData:output.left_text, rightData:output.right_text});
+  });
+  queue = queue + 1;
 
 })
 
@@ -99,7 +149,7 @@ function generateConvo(s, t) {
   let toAdd;
   let tags;
   let toSend = [];
-  let rm = rita.RiMarkov(5);
+  let rm = rita.RiMarkov(4);
   // console.log(t);
 
   if (s == "right") {
@@ -141,15 +191,11 @@ function generateConvo(s, t) {
 
 
     console.log("writing sentences...");
-    let sentences = rm.generateSentences(2);
+    let sentences = rm.generateSentences(1);
     let statement = sentences.join();
     statement = statement.replace('.,', '. ');
     currentStatement = statement;
     toSend = [statement, ''];
-
-    //TTS statement
-    // say.speak(statement, 'Victoria');
-    // say.speak(statement);
 
     //save the tags used to generate this round
     pastTopics = tags;
@@ -195,15 +241,11 @@ function generateConvo(s, t) {
     //generate new text
     // rm.loadText(leftCorpus);
     console.log("writing sentences...");
-    let sentences = rm.generateSentences(2);
+    let sentences = rm.generateSentences(1);
     let statement = sentences.join();
     statement = statement.replace('.,', '. ');
     currentStatement = statement;
     toSend = ['', statement];
-
-    //TTS statement
-    // say.speak(statement, 'Alex');
-    // say.speak(statement);
 
     //save the tags used to generate this round
     pastTopics = tags;
