@@ -1,16 +1,29 @@
-@media only screen and (min-width: 641px){
+/* @media only screen and (min-width: 641px){
    .parent {
    display: flex;
  }
+} */
+
+.parent {
+  display:none;
 }
 
 body {
   font: 25px Helvetica, Arial, sans-serif;
   margin:0px;
+  background-color: purple;
+  color:white;
 }
 
 a {
   color: #00B7FF;
+}
+
+#welcome {
+  text-align: center;
+  width: 80%;
+  margin:auto;
+  padding-top: 15%;
 }
 
 #leftBot {
@@ -38,4 +51,9 @@ a {
   margin: 0px;
   text-align: center;
   padding: 2.5%;
+  display:none;
+}
+
+#submit {
+  padding: 15px;
 }
