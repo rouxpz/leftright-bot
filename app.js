@@ -12,8 +12,7 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(express.static('public'));
 
 //TO DO:
-//automate back and forth discussion between bots
-//affect levels
+//affect levels??
 
 const client = new Client({
   connectionString: process.env.DATABASE_URL || 'postgres://localhost:5432/template1'
@@ -67,6 +66,7 @@ let currentStatement = '';
 let currentTopic = "election";
 let currentTopics = ['election'];
 let pastTopics = ['election'];
+let pastData;
 
 let toggle = false;
 
@@ -75,37 +75,16 @@ let queue = 0;
 
 
 app.get('/', (req, res) => {
-  // setTimeout(myFunc, 1500, 'funky');
-  if (loading == true) {
-    res.render('index', {leftData:'', rightData:''});
-    let loadQueue = setInterval(() => {
-      let side;
 
-      if (toggle) {
-        side = 'left';
-      } else {
-        side = 'right';
-      }
+  //     client.query('INSERT INTO lrbot(left_text, right_text, id, generated_on) VALUES($1, $2, $3, $4)', [toLoad[1], toLoad[0], order, todaysDate]);
 
-      let toLoad = generateConvo(side, currentTopics);
-      // console.log(toLoad);
-      client.query('INSERT INTO lrbot(left_text, right_text, id, generated_on) VALUES($1, $2, $3, $4)', [toLoad[1], toLoad[0], order, todaysDate]);
-      toggle = !toggle;
-      order = order + 1;
-    }, 2000);
-    setTimeout(() => {
-      clearInterval(loadQueue);
-      console.log("stopped");
-      console.log(toggle);
-      loading = false;
-    }, 6000);
-  } else {
-    res.render('index', {leftData:'', rightData:''});
-  }
+  res.render('index', {leftData:'', rightData:''});
+  pastData = {leftData:'', rightData:''};
 });
 
 app.post('/', (req, res) => {
   let side;
+  console.log(req.body.side);
 
   //determine side
   if (toggle == false) {
@@ -116,9 +95,11 @@ app.post('/', (req, res) => {
     toggle = false;
   }
 
+  // console.log(side);
   //parse current fragment for topics, either from last thing said or from user input
   if (req.body.userInput != '') {
     currentStatement = req.body.userInput;
+    pastData = {leftData:'', rightData:''};
   } else {
     currentStatement = currentStatement;
   }
@@ -130,18 +111,37 @@ app.post('/', (req, res) => {
   // console.log(currentTopics);
 
   //send to function that generates new text
-  let dataToAdd = generateConvo(side, currentTopics);
-  client.query('INSERT INTO lrbot(left_text, right_text, id, generated_on) VALUES($1, $2, $3, $4)', [dataToAdd[1], dataToAdd[0], order, todaysDate]);
-  order = order + 1;
+  let dataToAdd;
+  let newData = generateConvo(side, currentTopics);
+  // console.log("data added:")
+  // console.log(newData)
 
-  client.query("SELECT * FROM lrbot WHERE generated_on = $1 AND id = $2", [todaysDate, queue], (err, result) => {
-    if (err) throw err;
-    let output = result.rows[0];
-    // console.log(output.left_text);
-    console.log(loading);
-    res.render('index', {leftData:output.left_text, rightData:output.right_text});
-  });
-  queue = queue + 1;
+  if (newData[0] == '') {
+    dataToAdd = {
+      leftData: newData[1],
+      rightData: pastData.rightData
+    }
+  } else {
+    dataToAdd = {
+      leftData: pastData.leftData,
+      rightData: newData[0]
+    }
+  }
+
+  pastData = dataToAdd;
+  // client.query('INSERT INTO lrbot(left_text, right_text, id, generated_on) VALUES($1, $2, $3, $4)', [dataToAdd[1], dataToAdd[0], order, todaysDate]);
+  // order = order + 1;
+
+  res.render('index', dataToAdd);
+
+  // client.query("SELECT * FROM lrbot WHERE generated_on = $1 AND id = $2", [todaysDate, queue], (err, result) => {
+  //   if (err) throw err;
+  //   let output = result.rows[0];
+  //   // console.log(output.left_text);
+  //   res.render('index', {leftData:output.left_text, rightData:output.right_text});
+  // });
+  //
+  // queue = queue + 1;
 
 })
 
@@ -157,7 +157,7 @@ function generateConvo(s, t) {
     tags = [];
     rightCorpus = '';
 
-    console.log("tags refreshed at " + tags.length);
+    // console.log("tags refreshed at " + tags.length);
 
     //check tags sent from last statement against the text metadata
     for (var i = 0; i < rightData.length; i++) {
@@ -186,11 +186,11 @@ function generateConvo(s, t) {
         }
       }
     }
-    console.log("number of articles: " + toAdd.length);
+    // console.log("number of articles: " + toAdd.length);
     rightCorpus  = toAdd.join(' ');
 
 
-    console.log("writing sentences...");
+    // console.log("writing sentences...");
     let sentences = rm.generateSentences(1);
     let statement = sentences.join();
     statement = statement.replace('.,', '. ');
@@ -199,7 +199,7 @@ function generateConvo(s, t) {
 
     //save the tags used to generate this round
     pastTopics = tags;
-    console.log(pastTopics);
+    // console.log(pastTopics);
 
   } else if (s == "left") {
     toAdd = [];
@@ -235,12 +235,12 @@ function generateConvo(s, t) {
         }
       }
     }
-    console.log("number of articles: " + toAdd.length);
+    // console.log("number of articles: " + toAdd.length);
     // leftCorpus  = toAdd.join(' ');
 
     //generate new text
     // rm.loadText(leftCorpus);
-    console.log("writing sentences...");
+    // console.log("writing sentences...");
     let sentences = rm.generateSentences(1);
     let statement = sentences.join();
     statement = statement.replace('.,', '. ');
@@ -249,7 +249,7 @@ function generateConvo(s, t) {
 
     //save the tags used to generate this round
     pastTopics = tags;
-    console.log(pastTopics);
+    // console.log(pastTopics);
   }
 
   return toSend;

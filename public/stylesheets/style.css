@@ -5,7 +5,7 @@
 } */
 
 .parent {
-  display:none;
+  display:flex;
 }
 
 body {
@@ -19,12 +19,12 @@ a {
   color: #00B7FF;
 }
 
-#welcome {
+/* #welcome {
   text-align: center;
   width: 80%;
   margin:auto;
   padding-top: 15%;
-}
+} */
 
 #leftBot {
   flex: 2;
@@ -51,9 +51,12 @@ a {
   margin: 0px;
   text-align: center;
   padding: 2.5%;
-  display:none;
 }
 
 #submit {
   padding: 15px;
+}
+
+.submitForm {
+  display:none;
 }
