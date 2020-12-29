@@ -9,6 +9,7 @@
   </head>
   <body onload = "botSpeak()">
   <div class="parent">
+    <p id="hidden"><%= voice %></p>
     <div id="leftBot">
       <h1>Nick</h1>
       <div id="leftData"><%= leftData %></div>
@@ -32,8 +33,8 @@
 
     var on = true;
     var timer;
-
-    meSpeak.loadVoice('en/en-us');
+    var voices = window.speechSynthesis.getVoices();
+    console.log(voices);
 
     function generateNewText() {
       $.post('/', {
@@ -42,28 +43,28 @@
         document.open();
         document.write(data);
         document.close();
-        toggle = !toggle;
       });
     }
 
     function botSpeak() {
-      var leftVoice = document.getElementById('leftData').innerHTML;
-      var rightVoice = document.getElementById('rightData').innerHTML;
+      var msg;
+      voices = window.speechSynthesis.getVoices();
+      var voiceToUse = document.getElementById('hidden').innerHTML;
+      var leftPersona = document.getElementById('leftData').innerHTML;
+      var rightPersona = document.getElementById('rightData').innerHTML;
 
-      // if (toggle == true) {
-      //   meSpeak.speak(leftVoice);
-      // } else if (toggle == false) {
-      //   meSpeak.speak(rightVoice, { variant: "f1"});
-      // }
-      //
-      // toggle = !toggle;
-
-      //
-      // console.log("left: " + leftVoice);
-      // console.log("right: " + rightVoice);
+      if (voiceToUse == 'leftVoice') {
+        msg = new SpeechSynthesisUtterance(leftPersona);
+        msg.voice = voices[0];
+        window.speechSynthesis.speak(msg);
+      } else if (voiceToUse == 'rightVoice') {
+        msg = new SpeechSynthesisUtterance(rightPersona);
+        msg.voice = voices[10];
+        window.speechSynthesis.speak(msg);
+      }
     }
 
-    var speaking = setTimeout(generateNewText, 5000);
+    var speaking = setTimeout(generateNewText, 7000);
 
     function inputText() {
       clearTimeout(speaking);

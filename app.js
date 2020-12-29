@@ -21,8 +21,8 @@ const client = new Client({
 client.connect();
 
 let urlBase = 'https://roopavasudevan.com/dump/bot-json/';
-let leftFiles = ['climate-change-left.json', 'covid-left.json', 'immigration-left.json'];
-let rightFiles = ['climate-change-right.json', 'covid-right.json', 'immigration-right.json'];
+let leftFiles = ['nick.json'];
+let rightFiles = ['kimberly.json'];
 
 let rightData = [];
 let leftData = [];
@@ -63,9 +63,9 @@ let rightCorpus = '';
 let leftCorpus = '';
 
 let currentStatement = '';
-let currentTopic = "election";
-let currentTopics = ['election'];
-let pastTopics = ['election'];
+let currentTopic = "virus";
+let currentTopics = ['virus'];
+let pastTopics = ['virus'];
 let pastData;
 
 let toggle = false;
@@ -78,8 +78,8 @@ app.get('/', (req, res) => {
 
   //     client.query('INSERT INTO lrbot(left_text, right_text, id, generated_on) VALUES($1, $2, $3, $4)', [toLoad[1], toLoad[0], order, todaysDate]);
 
-  res.render('index', {leftData:'', rightData:''});
-  pastData = {leftData:'', rightData:''};
+  res.render('index', {leftData:'', rightData:'', voice:''});
+  pastData = {leftData:'', rightData:'', voice:''};
 });
 
 app.post('/', (req, res) => {
@@ -99,7 +99,7 @@ app.post('/', (req, res) => {
   //parse current fragment for topics, either from last thing said or from user input
   if (req.body.userInput != '') {
     currentStatement = req.body.userInput;
-    pastData = {leftData:'', rightData:''};
+    pastData = {leftData:'', rightData:'', voice:''};
   } else {
     currentStatement = currentStatement;
   }
@@ -119,12 +119,14 @@ app.post('/', (req, res) => {
   if (newData[0] == '') {
     dataToAdd = {
       leftData: newData[1],
-      rightData: pastData.rightData
+      rightData: pastData.rightData,
+      voice: 'leftVoice'
     }
   } else {
     dataToAdd = {
       leftData: pastData.leftData,
-      rightData: newData[0]
+      rightData: newData[0],
+      voice: 'rightVoice'
     }
   }
 
@@ -145,11 +147,16 @@ app.post('/', (req, res) => {
 
 })
 
+app.get('/voices', (req, res) => {
+  res.render('voices');
+})
+
 function generateConvo(s, t) {
   let toAdd;
   let tags;
   let toSend = [];
-  let rm = rita.RiMarkov(4);
+  let rm = rita.RiMarkov(5);
+  let sentenceStarts = ["Didn't you know that***?", "You should be aware that***.", "You're wrong,***.", "The truth is that***.", "Just admit that***!"]
   // console.log(t);
 
   if (s == "right") {
@@ -189,11 +196,13 @@ function generateConvo(s, t) {
     // console.log("number of articles: " + toAdd.length);
     rightCorpus  = toAdd.join(' ');
 
-
+    var start = sentenceStarts[Math.floor(Math.random() * sentenceStarts.length)];
     // console.log("writing sentences...");
     let sentences = rm.generateSentences(1);
-    let statement = sentences.join();
-    statement = statement.replace('.,', '. ');
+    let joinedSents = sentences.join();
+    joinedSents = joinedSents.replace('.,', '. ');
+    joinedSents = joinedSents[0].toLowerCase() + joinedSents.substr(1, joinedSents.length - 2);
+    var statement = start.replace('***', ' ' + joinedSents);
     currentStatement = statement;
     toSend = [statement, ''];
 
@@ -241,9 +250,13 @@ function generateConvo(s, t) {
     //generate new text
     // rm.loadText(leftCorpus);
     // console.log("writing sentences...");
+    var start = sentenceStarts[Math.floor(Math.random() * sentenceStarts.length)];
+    // console.log("writing sentences...");
     let sentences = rm.generateSentences(1);
-    let statement = sentences.join();
-    statement = statement.replace('.,', '. ');
+    let joinedSents = sentences.join();
+    joinedSents = joinedSents.replace('.,', '. ');
+    joinedSents = joinedSents[0].toLowerCase() + joinedSents.substr(1, joinedSents.length - 2);
+    var statement = start.replace('***', ' ' + joinedSents);
     currentStatement = statement;
     toSend = ['', statement];
 
