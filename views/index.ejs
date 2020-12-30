@@ -7,7 +7,7 @@
     <script type="text/javascript" src="javascripts/jquery-3.5.1.min.js"></script>
     <title>Left/Right Bot Demo</title>
   </head>
-  <body onload = "botSpeak()" onkeypress="botSpeak()">
+  <body onload = "botSpeak()" onkeypress="checkIfSpeaking()">
   <div class="parent">
     <p id="hidden"><%= voice %></p>
     <div id="leftBot">
@@ -24,7 +24,7 @@
     <button id="contribute" type="button" name="button" onclick="inputText()">I want to talk</button>
     <form class="submitForm" action="/" method="post">
       <p>Contribute to the conversation:</p>
-      <input type="textbox" size="50" height="50" name="userInput" value=""><br>
+      <input id="userInput" type="textbox" size="50" height="50" name="userInput" value=""><br>
       <input id="submit" onclick="on = true;" type="submit" name="submit" value="Submit">
     </form>
   </div>
@@ -79,6 +79,14 @@
       on = false;
       document.getElementsByClassName('submitForm')[0].style.display="block";
       document.getElementById('contribute').style.display = 'none';
+    }
+
+    function checkIfSpeaking() {
+      if ($("#userInput").is(":focus")) {
+        console.log("focused");
+      } else {
+        botSpeak();
+      }
     }
 
   </script>

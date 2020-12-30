@@ -53,7 +53,7 @@ a {
   padding: 2.5%;
 }
 
-#submit, #contribute {
+#submit, #contribute, .button {
   background-color: black;
   color:white;
   border-color: gray;
@@ -75,4 +75,14 @@ a {
 
 .scene5text {
   display:none;
+}
+
+.button {
+  margin-left: 20px;
+  margin-top: 20px;
+}
+
+#nestedButtons {
+  display:none;
+  margin-left: 40px;
 }
