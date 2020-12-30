@@ -6,13 +6,23 @@
     <link rel="stylesheet" href="stylesheets/style.css">
   </head>
   <body>
-    <button type="button" name="button" class="button" onclick="readSceneFive()">Scene 5</button>
+    <button type="button" name="button" class="button" onclick="readSceneFive()">Read Scene 5</button><BR>
     <p class="scene5text">LINDA, 52 (Devoted Conservative): This lock down is wrong. Yes, protect the vulnerable but we have to get on with living. People are abusing each other, committing suicide, turning to alcohol and drugs, losing their businesses. A lock down does nothing!!!!</p>
     <p class="scene5text">Sam, 28 [Progressive Activist]: I was talking to some colleagues in Melbourne a few days ago and they said they just came out of severe lock down - they had evening curfews and couldn’t leave a 5k radius, and everything closed - but now they have zero cases in their entire province! I felt really jealous actually. If we had done that earlier in the year, we’d be past this by now. Instead we have a thousand new cases and dozens of deaths a day. At least we are doing something now, but it’s not enough I don’t think. More support does need to be given to vulnerable communities at the same time.</p>
     <p class="scene5text">KAREN, 58 [Devoted Conservative]: as long as people have freedom to travel from one area to another that isn't under the same lockdown this nonsense will continue but Gretchen WITCH-mer has already made it VERY clear publicly that she plans on using this time of Government control over the people as a time to re-set the state of humanity in the United States ie...roll in the New World Order with all its dangerous technology...cloning, microchip insertion through the covid vaccine so every single person will NO LONGER have freedom and the Government will literally monitor their every breath, all their finances...everything about them...THIS is what the Libs and Dems have been working on since BEFORE this new strain of flu came out and are now using it to their full advantage on control.</p>
     <p class="scene5text">Sam, 28 [Progressive Activist]: Don't worry - the government is definitely not smart enough to develop cloning or put microchips in vaccines!</p>
-    <button type="button" name="button" class="button">Scene 9</button>
+    <button id = "openNine" onclick="openSceneNine()" type="button" name="button" class="button">Open Scene 9 Options</button>
+    <div id="nestedButtons">
+      <button id="disclosure" class="button" onclick="readSentence('disclosure')" type="button" name="button">Self-disclosure</button><br>
+      <button id="rebel" class="button" onclick="readSentence('rebel')" type="button" name="button">Rebel media</button><br>
+      <button id="spontaneous" class="button" onclick="readSentence('spontaneous')" type="button" name="button">Being spontaneous</button><br>
+      <button id="intense" class="button" onclick="readSentence('intense')" type="button" name="button">Intense</button><br>
+      <button id="connection" class="button" onclick="readSentence('connection')" type="button" name="button">Connection</button><br>
+    </div>
     <script type="text/javascript">
+
+      var nineOpened = false;
+
       var voices = window.speechSynthesis.getVoices();
 
       function readSceneFive() {
@@ -27,6 +37,18 @@
             msg.voice = voices[0];
           }
           window.speechSynthesis.speak(msg);
+        }
+      }
+
+      function openSceneNine() {
+        if (nineOpened == false) {
+          document.getElementById('nestedButtons').style.display = "block";
+          document.getElementById('openNine').innerHTML = "Close Scene 9 Options";
+          nineOpened = true;
+        } else {
+          document.getElementById('nestedButtons').style.display = "none";
+          document.getElementById('openNine').innerHTML = "Open Scene 9 Options";
+          nineOpened = false;
         }
       }
     </script>
