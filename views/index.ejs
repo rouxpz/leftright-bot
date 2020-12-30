@@ -7,7 +7,7 @@
     <script type="text/javascript" src="javascripts/jquery-3.5.1.min.js"></script>
     <title>Left/Right Bot Demo</title>
   </head>
-  <body onload = "botSpeak()">
+  <body onload = "botSpeak()" onkeypress="botSpeak()">
   <div class="parent">
     <p id="hidden"><%= voice %></p>
     <div id="leftBot">
@@ -25,7 +25,7 @@
     <form class="submitForm" action="/" method="post">
       <p>Contribute to the conversation:</p>
       <input type="textbox" size="50" height="50" name="userInput" value=""><br>
-      <input id="submit" type="submit" name="submit" value="Submit">
+      <input id="submit" onclick="on = true;" type="submit" name="submit" value="Submit">
     </form>
   </div>
   <script src="/socket.io/socket.io.js"></script>
@@ -48,6 +48,7 @@
 
     function botSpeak() {
       var msg;
+      console.log("speaking");
       voices = window.speechSynthesis.getVoices();
       var voiceToUse = document.getElementById('hidden').innerHTML;
       var leftPersona = document.getElementById('leftData').innerHTML;
@@ -59,16 +60,23 @@
         window.speechSynthesis.speak(msg);
       } else if (voiceToUse == 'rightVoice') {
         msg = new SpeechSynthesisUtterance(rightPersona);
-        msg.voice = voices[10];
+        msg.voice = voices[40];
         window.speechSynthesis.speak(msg);
+      }
+
+      msg.onend = function() {
+        if (on == true) {
+          generateNewText();
+        }
       }
     }
 
-    var speaking = setTimeout(generateNewText, 7000);
+    // var speaking = setTimeout(generateNewText, 7000);
 
     function inputText() {
-      clearTimeout(speaking);
+      // clearTimeout(speaking);
       // alert("turned off");
+      on = false;
       document.getElementsByClassName('submitForm')[0].style.display="block";
       document.getElementById('contribute').style.display = 'none';
     }

@@ -29,6 +29,23 @@ let leftData = [];
 
 let loading = true;
 
+let startingStatement;
+
+
+let rightCorpus = '';
+let leftCorpus = '';
+
+let currentStatement = '';
+let currentTopic = "virus";
+let currentTopics = ['virus'];
+let pastTopics = ['virus'];
+let pastData;
+
+let toggle = true;
+
+let order = 0;
+let queue = 0;
+
 //get today's date for the conversation
 let dateOb = new Date();
 let todaysDate = dateOb.getFullYear() + "-" + (dateOb.getMonth() + 1) + "-" + dateOb.getDate();
@@ -54,31 +71,17 @@ for (var i = 0; i < rightFiles.length; i++) {
   }, function(error, response, body){
     if (!error && response.statusCode === 200) {
       rightData = rightData.concat(body.data);
-      console.log("right data length: " + rightData.length)
+      console.log("right data length: " + rightData.length);
+      startingStatement = generateConvo('right', currentTopics);
     }
-  })
+  });
 }
-
-let rightCorpus = '';
-let leftCorpus = '';
-
-let currentStatement = '';
-let currentTopic = "virus";
-let currentTopics = ['virus'];
-let pastTopics = ['virus'];
-let pastData;
-
-let toggle = false;
-
-let order = 0;
-let queue = 0;
-
 
 app.get('/', (req, res) => {
 
   //     client.query('INSERT INTO lrbot(left_text, right_text, id, generated_on) VALUES($1, $2, $3, $4)', [toLoad[1], toLoad[0], order, todaysDate]);
 
-  res.render('index', {leftData:'', rightData:'', voice:''});
+  res.render('index', {leftData:'', rightData:startingStatement[0], voice:'rightVoice'});
   pastData = {leftData:'', rightData:'', voice:''};
 });
 
