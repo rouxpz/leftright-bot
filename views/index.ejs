@@ -7,7 +7,7 @@
     <script type="text/javascript" src="javascripts/jquery-3.5.1.min.js"></script>
     <title>Left/Right Bot Demo</title>
   </head>
-  <body onload = "botSpeak()">
+  <body onload = "botSpeak()" onkeypress="botSpeak()">
   <div class="parent">
     <p id="hidden"><%= voice %></p>
     <div id="leftBot">
@@ -48,6 +48,7 @@
 
     function botSpeak() {
       var msg;
+      console.log("speaking");
       voices = window.speechSynthesis.getVoices();
       var voiceToUse = document.getElementById('hidden').innerHTML;
       var leftPersona = document.getElementById('leftData').innerHTML;
