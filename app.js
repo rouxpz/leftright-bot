@@ -91,18 +91,21 @@ request({
         metadata.push(body.immigration[i]);
       }
     }
+    console.log(metadata.length);
 
     for (var i = 0; i < body.covid.length; i++) {
       if (!metadata.includes(body.covid[i])) {
         metadata.push(body.covid[i]);
       }
     }
+    console.log(metadata.length);
 
     for (var i = 0; i < body.climateChange.length; i++) {
       if (!metadata.includes(body.climateChange[i])) {
         metadata.push(body.climateChange[i]);
       }
     }
+    console.log(metadata.length);
 
 
     // console.log(metadata);
@@ -207,7 +210,7 @@ function generateConvo(s, tags) {
   // let tags = [];
   let toSend = [];
   let rm = rita.RiMarkov(5);
-  let sentenceStarts = ["Didn't you know that***?", "You should be aware that***.", "You're wrong,***.", "The truth is that***.", "Just admit that***!"]
+  let sentenceStarts = ["Didn't you know that***?", "You should be aware that***.", "You're wrong,***.", "The truth is that***.", "Just admit that***!", "I want you to know that***.", "You will soon admit that***!", "Why won't you just say that***?", "I'm telling you that***!", "Why can't I get you to believe that***?"]
 
   if (s == "right") {
     toAdd = [];
@@ -223,14 +226,46 @@ function generateConvo(s, tags) {
       for (j = 0; j < tags.length; j++) {
         if (rightData[i].metadata.includes(tags[j]) == true && toAdd.includes(rightData[i].text) == false) {
           toAdd.push(rightData[i].text);
-
           // console.log("adding to corpus...");
-          rm.loadText(rightData[i].text);
         }
       }
     }
-    // console.log("number of articles: " + toAdd.length);
-    rightCorpus  = toAdd.join(' ');
+    console.log("number of articles: " + toAdd.length);
+
+    if (toAdd.length < 1) {
+      newTags = [];
+      for (var i = 0; i < tags.length; i++) {
+        if (metadata.indexOf(tags[i]) <= 110) {
+          if (!newTags.includes('immigration')) {
+            newTags.push('immigration');
+          }
+        } else if (metadata.indexOf(tags[i]) > 110 && metadata.indexOf(tags[i]) <= 163) {
+          if (!newTags.includes('covid')) {
+            newTags.push('covid');
+          }
+        } else {
+          if (!newTags.includes('climate')) {
+            newTags.push('climate');
+          }
+        }
+      }
+
+      for (var i = 0; i < rightData.length; i++) {
+
+        //filter out articles based on metadata
+        for (j = 0; j < newTags.length; j++) {
+          if (rightData[i].metadata.includes(newTags[j]) == true && toAdd.includes(rightData[i].text) == false) {
+            toAdd.push(rightData[i].text);
+            // console.log("adding to corpus...");
+            // rm.loadText(rightData[i].text);
+          }
+        }
+      }
+    }
+
+    for (var i = 0; i < toAdd.length; i++) {
+      rm.loadText(toAdd[i]);
+    }
 
     var start = sentenceStarts[Math.floor(Math.random() * sentenceStarts.length)];
     // console.log("writing sentences...");
@@ -264,9 +299,44 @@ function generateConvo(s, tags) {
           toAdd.push(leftData[i].text);
 
           // console.log("adding to corpus...");
-          rm.loadText(leftData[i].text);
+          // rm.loadText(leftData[i].text);
         }
       }
+    }
+
+    if (toAdd.length < 1) {
+      newTags = [];
+      for (var i = 0; i < tags.length; i++) {
+        if (metadata.indexOf(tags[i]) <= 110) {
+          if (!newTags.includes('immigration')) {
+            newTags.push('immigration');
+          }
+        } else if (metadata.indexOf(tags[i]) > 110 && metadata.indexOf(tags[i]) <= 163) {
+          if (!newTags.includes('covid')) {
+            newTags.push('covid');
+          }
+        } else {
+          if (!newTags.includes('climate')) {
+            newTags.push('climate');
+          }
+        }
+      }
+
+      for (var i = 0; i < leftData.length; i++) {
+
+        //filter out articles based on metadata
+        for (j = 0; j < newTags.length; j++) {
+          if (leftData[i].metadata.includes(newTags[j]) == true && toAdd.includes(leftData[i].text) == false) {
+            toAdd.push(leftData[i].text);
+            // console.log("adding to corpus...");
+            // rm.loadText(rightData[i].text);
+          }
+        }
+      }
+    }
+
+    for (var i = 0; i < toAdd.length; i++) {
+      rm.loadText(toAdd[i]);
     }
 
     var start = sentenceStarts[Math.floor(Math.random() * sentenceStarts.length)];
