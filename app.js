@@ -23,6 +23,7 @@ client.connect();
 let urlBase = 'https://roopavasudevan.com/dump/bot-json/';
 let leftFiles = ['nick.json'];
 let rightFiles = ['kimberly.json'];
+let metadata = [];
 
 let rightData = [];
 let leftData = [];
@@ -77,6 +78,37 @@ for (var i = 0; i < rightFiles.length; i++) {
   });
 }
 
+request({
+  url: urlBase + "metadata.json",
+  json: true
+}, function(error, response, body){
+  if (!error && response.statusCode === 200) {
+    // console.log(body.data.length);
+    // console.log(body.immigration);
+
+    for (var i = 0; i < body.immigration.length; i++) {
+      if (!metadata.includes(body.immigration[i])) {
+        metadata.push(body.immigration[i]);
+      }
+    }
+
+    for (var i = 0; i < body.covid.length; i++) {
+      if (!metadata.includes(body.covid[i])) {
+        metadata.push(body.covid[i]);
+      }
+    }
+
+    for (var i = 0; i < body.climateChange.length; i++) {
+      if (!metadata.includes(body.climateChange[i])) {
+        metadata.push(body.climateChange[i]);
+      }
+    }
+
+
+    // console.log(metadata);
+  }
+});
+
 app.get('/', (req, res) => {
 
   //     client.query('INSERT INTO lrbot(left_text, right_text, id, generated_on) VALUES($1, $2, $3, $4)', [toLoad[1], toLoad[0], order, todaysDate]);
@@ -87,7 +119,8 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
   let side;
-  console.log(req.body.side);
+  let tagsToSend = [];
+  // console.log(req.body.side);
 
   //determine side
   if (toggle == false) {
@@ -107,15 +140,30 @@ app.post('/', (req, res) => {
     currentStatement = currentStatement;
   }
 
-  console.log(currentStatement);
+  // console.log(currentStatement);
   currentStatement = currentStatement.toLowerCase().replace('.', '').replace(',', '');
   currentStatement = currentStatement.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
   currentTopics = currentStatement.split(' ');
-  // console.log(currentTopics);
+
+  for (var i = 0; i < currentTopics.length; i++) {
+    if (metadata.includes(currentTopics[i])) {
+      tagsToSend.push(currentTopics[i]);
+    }
+  }
+
+  console.log("collecting tags:")
+  console.log(tagsToSend);
+
+  if (tagsToSend.length < 1) {
+    tagsToSend = pastTopics;
+  }
+
+  console.log("sending tags:");
+  console.log(tagsToSend);
 
   //send to function that generates new text
   let dataToAdd;
-  let newData = generateConvo(side, currentTopics);
+  let newData = generateConvo(side, tagsToSend);
   // console.log("data added:")
   // console.log(newData)
 
@@ -154,37 +202,22 @@ app.get('/voices', (req, res) => {
   res.render('voices');
 })
 
-function generateConvo(s, t) {
+function generateConvo(s, tags) {
   let toAdd;
-  let tags;
+  // let tags = [];
   let toSend = [];
   let rm = rita.RiMarkov(5);
   let sentenceStarts = ["Didn't you know that***?", "You should be aware that***.", "You're wrong,***.", "The truth is that***.", "Just admit that***!"]
-  // console.log(t);
 
   if (s == "right") {
     toAdd = [];
-    tags = [];
+    // tags = [];
     rightCorpus = '';
 
     // console.log("tags refreshed at " + tags.length);
 
     //check tags sent from last statement against the text metadata
     for (var i = 0; i < rightData.length; i++) {
-      for (var j = 0; j < t.length; j++) {
-        if (rightData[i].metadata.includes(t[j]) == true && tags.includes(t[j]) == false) {
-          tags.push(t[j]);
-          console.log(tags.length);
-        }
-      }
-
-      //keep the same tags if there's no overlap
-      if (tags.length < 1) {
-        tags = pastTopics;
-      } else {
-        pastTopics = [];
-        // console.log("past topics: " + pastTopics.length);
-      }
 
       //filter out articles based on metadata
       for (j = 0; j < tags.length; j++) {
@@ -211,31 +244,19 @@ function generateConvo(s, t) {
 
     //save the tags used to generate this round
     pastTopics = tags;
+
+    // console.log("past topics");
     // console.log(pastTopics);
 
   } else if (s == "left") {
     toAdd = [];
-    tags = [];
+    // tags = [];
     leftCorpus = '';
 
     // console.log("tags refreshed at " + tags.length);
 
     //check tags sent from last statement against the text metadata
     for (var i = 0; i < leftData.length; i++) {
-      for (var j = 0; j < t.length; j++) {
-        if (leftData[i].metadata.includes(t[j]) == true && tags.includes(t[j]) == false) {
-          tags.push(t[j]);
-          // console.log(tags.length);
-        }
-      }
-
-      //keep the same tags if there's no overlap
-      if (tags.length < 1) {
-        tags = pastTopics;
-      } else {
-        pastTopics = []
-        // console.log("past topics: " + pastTopics.length);
-      }
 
       //filter out articles based on metadata
       for (j = 0; j < tags.length; j++) {
@@ -247,12 +268,7 @@ function generateConvo(s, t) {
         }
       }
     }
-    // console.log("number of articles: " + toAdd.length);
-    // leftCorpus  = toAdd.join(' ');
 
-    //generate new text
-    // rm.loadText(leftCorpus);
-    // console.log("writing sentences...");
     var start = sentenceStarts[Math.floor(Math.random() * sentenceStarts.length)];
     // console.log("writing sentences...");
     let sentences = rm.generateSentences(1);
