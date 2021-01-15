@@ -205,12 +205,16 @@ app.get('/voices', (req, res) => {
   res.render('voices');
 })
 
+app.get('/dialogue', (req, res) => {
+  res.render('dialogue');
+})
+
 function generateConvo(s, tags) {
   let toAdd;
   // let tags = [];
   let toSend = [];
   let rm = rita.RiMarkov(5);
-  let sentenceStarts = ["Didn't you know that***?", "You should be aware that***.", "You're wrong,***.", "The truth is that***.", "Just admit that***!", "I want you to know that***.", "You will soon admit that***!", "Why won't you just say that***?", "I'm telling you that***!", "Why can't I get you to believe that***?"]
+  let sentenceStarts = ["Didn't you know that***?", "***", "You should be aware that***.", "You're wrong,***.", "The truth is that***.", "***", "Just admit that***!", "I want you to know that***.", "You will soon admit that***!", "***", "Why won't you just say that***?", "I'm telling you that***!", "Why can't I get you to believe that***?", "Actually,***.", "Well, I heard that***.", "That's idiotic, because***.", "I actually find that really upsetting because***.", "Oh,***.", "OK,***.", "I disagree,***.", "Look now,***."]
 
   if (s == "right") {
     toAdd = [];
