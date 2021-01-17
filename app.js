@@ -209,6 +209,10 @@ app.get('/dialogue', (req, res) => {
   res.render('dialogue');
 })
 
+app.get('/audience', (req, res) => {
+  res.render('audience');
+})
+
 function generateConvo(s, tags) {
   let toAdd;
   // let tags = [];

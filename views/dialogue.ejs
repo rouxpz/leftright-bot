@@ -8,14 +8,14 @@
   <body onkeypress="triggerDialogue()">
     <div class="parent">
       <div id="leftDialogue">
-        <div id="nickDia"></div>
-        <textarea readonly id="nickInput" name="nickInput" rows="1" cols="45"></textarea>
-        <button class="sendButton" type="button" name="button">Send</button>
+        <div id="leftDia"></div>
+        <!-- <textarea readonly id="nickInput" name="nickInput" rows="1" cols="45"></textarea>
+        <button class="sendButton" type="button" name="button">Send</button> -->
       </div>
 
       <div id="rightDialogue">
-        <div id="kimDia"></div>
-        <textarea readonly id="kimInput" name="nickInput" rows="1" cols="45"></textarea> <button class="sendButton" type="button" name="button">Send</button>
+        <div id="rightDia"></div>
+        <!-- <textarea readonly id="kimInput" name="nickInput" rows="1" cols="45"></textarea> <button class="sendButton" type="button" name="button">Send</button> -->
       </div>
     </div>
     <script type="text/javascript">
@@ -27,19 +27,39 @@
 
       let status = -1;
 
-      let rightBox = document.getElementById('kimDia');
-      let leftBox = document.getElementById('nickDia');
+      let rightBox = document.getElementById('rightDia');
+      let leftBox = document.getElementById('leftDia');
 
       function triggerDialogue() {
         // console.log(dialogue[status]);
         // console.log(speakers[status]);
         var msg;
         status++;
+        var count = 1;
 
         voices = window.speechSynthesis.getVoices();
 
         if (speakers[status] == "Kimberly") {
-          rightBox.innerHTML += '<strong>Kimberly:</strong> ' + dialogue[status] + '<br><br>';
+
+          dialogueSplit = dialogue[status].split(/(?<=\.\s)/)
+          console.log(dialogueSplit);
+
+          rightBox.innerHTML += '<strong>Kimberly:</strong> ' + dialogueSplit[0];
+
+          if (dialogueSplit.length > 1 && dialogueSplit[dialogueSplit.length - 1] != '') {
+            var addText = setInterval(function() {
+              rightBox.innerHTML += dialogueSplit[count];
+              if (count < dialogueSplit.length - 1) {
+                count++;
+              } else {
+                rightBox.innerHTML += '<br><br>';
+                clearInterval(addText);
+              }
+            }, 3000);
+          } else {
+            rightBox.innerHTML += '<br><br>';
+          }
+
           rightBox.scrollTop = rightBox.scrollHeight;
 
           msg = new SpeechSynthesisUtterance(dialogue[status]);

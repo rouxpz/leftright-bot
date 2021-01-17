@@ -95,7 +95,7 @@ a {
   margin-left: 40px;
 }
 
-#nickDia, #nickInput, #kimDia, #kimInput {
+#leftDia, #leftInput, #rightDia, #rightInput {
   font-family: Helvetica;
   font-size: 16px;
 }
@@ -106,12 +106,12 @@ a {
   vertical-align: top;
 }
 
-#nickInput, #kimInput {
+#leftInput, #rightInput {
   margin-top: 5px;
   display: inline-block;
 }
 
-#nickDia, #kimDia {
+#leftDia, #rightDia {
   color: black;
   background-color: white;
   border-style: solid;
