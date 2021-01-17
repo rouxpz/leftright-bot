@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <title>Nick & Kimberly</title>
+  </head>
+  <body>
+    <div class="parent">
+      <div id="leftDialogue">
+        <div id="leftDia"></div>
+        <textarea id="leftInput" name="leftInput" rows="1" cols="45"></textarea>
+        <button onclick="sendDialogue('left')" class="sendButton" type="button" name="button">Send</button>
+      </div>
+
+      <div id="rightDialogue">
+        <div id="rightDia"></div>
+        <textarea id="rightInput" name="rightInput" rows="1" cols="45"></textarea> <button onclick="sendDialogue('right')" class="sendButton" type="button" name="button">Send</button>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      let leftBox = document.getElementById('leftDia');
+      let rightBox = document.getElementById('rightDia');
+
+      function sendDialogue(side) {
+        let userInput = document.getElementById(side+'Input').value;
+        if (userInput != '') {
+          if (side == 'left') {
+            leftBox.innerHTML += "<strong>Me:</strong> " + userInput + '<br><br>';
+          } else {
+            rightBox.innerHTML += "<strong>Me:</strong> " + userInput + '<br><br>';
+          }
+
+          document.getElementById(side+'Input').value = '';
+          generateResponse(userInput, side);
+
+        } else {
+          document.getElementById(side+'Input').value = '';
+          generateResponse(userInput, side);
+        }
+
+
+      }
+
+      function generateResponse(input, side) {
+
+        let response;
+        let greetings = ['hello', 'hi'];
+
+        if (side == 'left') {
+          if (greetings.includes(input.toLowerCase())) {
+            response = "Hi, I'm Nick. Nice to meet you."
+          } else {
+            response = "Can you tell me more?"
+          }
+          setTimeout(function() {
+            leftBox.innerHTML += "<strong>Nick:</strong> " + response + '<br><br>'
+          }, 500);
+        } else {
+          if (greetings.includes(input.toLowerCase())) {
+            response = 'Hello, my name is Kimberly. '
+          } else {
+            response = "I'd like to hear more."
+          }
+          setTimeout(function() {
+            rightBox.innerHTML += "<strong>Kimberly:</strong> " + response + '<br><br>';
+          }, 500);
+        }
+      }
+    </script>
+
+  </body>

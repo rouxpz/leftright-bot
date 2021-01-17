@@ -23,6 +23,7 @@ client.connect();
 let urlBase = 'https://roopavasudevan.com/dump/bot-json/';
 let leftFiles = ['nick.json'];
 let rightFiles = ['kimberly.json'];
+let metadata = [];
 
 let rightData = [];
 let leftData = [];
@@ -77,6 +78,40 @@ for (var i = 0; i < rightFiles.length; i++) {
   });
 }
 
+request({
+  url: urlBase + "metadata.json",
+  json: true
+}, function(error, response, body){
+  if (!error && response.statusCode === 200) {
+    // console.log(body.data.length);
+    // console.log(body.immigration);
+
+    for (var i = 0; i < body.immigration.length; i++) {
+      if (!metadata.includes(body.immigration[i])) {
+        metadata.push(body.immigration[i]);
+      }
+    }
+    console.log(metadata.length);
+
+    for (var i = 0; i < body.covid.length; i++) {
+      if (!metadata.includes(body.covid[i])) {
+        metadata.push(body.covid[i]);
+      }
+    }
+    console.log(metadata.length);
+
+    for (var i = 0; i < body.climateChange.length; i++) {
+      if (!metadata.includes(body.climateChange[i])) {
+        metadata.push(body.climateChange[i]);
+      }
+    }
+    console.log(metadata.length);
+
+
+    // console.log(metadata);
+  }
+});
+
 app.get('/', (req, res) => {
 
   //     client.query('INSERT INTO lrbot(left_text, right_text, id, generated_on) VALUES($1, $2, $3, $4)', [toLoad[1], toLoad[0], order, todaysDate]);
@@ -87,7 +122,8 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
   let side;
-  console.log(req.body.side);
+  let tagsToSend = [];
+  // console.log(req.body.side);
 
   //determine side
   if (toggle == false) {
@@ -107,15 +143,30 @@ app.post('/', (req, res) => {
     currentStatement = currentStatement;
   }
 
-  console.log(currentStatement);
+  // console.log(currentStatement);
   currentStatement = currentStatement.toLowerCase().replace('.', '').replace(',', '');
   currentStatement = currentStatement.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
   currentTopics = currentStatement.split(' ');
-  // console.log(currentTopics);
+
+  for (var i = 0; i < currentTopics.length; i++) {
+    if (metadata.includes(currentTopics[i])) {
+      tagsToSend.push(currentTopics[i]);
+    }
+  }
+
+  console.log("collecting tags:")
+  console.log(tagsToSend);
+
+  if (tagsToSend.length < 1) {
+    tagsToSend = pastTopics;
+  }
+
+  console.log("sending tags:");
+  console.log(tagsToSend);
 
   //send to function that generates new text
   let dataToAdd;
-  let newData = generateConvo(side, currentTopics);
+  let newData = generateConvo(side, tagsToSend);
   // console.log("data added:")
   // console.log(newData)
 
@@ -154,50 +205,75 @@ app.get('/voices', (req, res) => {
   res.render('voices');
 })
 
-function generateConvo(s, t) {
+app.get('/dialogue', (req, res) => {
+  res.render('dialogue');
+})
+
+app.get('/audience', (req, res) => {
+  res.render('audience');
+})
+
+function generateConvo(s, tags) {
   let toAdd;
-  let tags;
+  // let tags = [];
   let toSend = [];
   let rm = rita.RiMarkov(5);
-  let sentenceStarts = ["Didn't you know that***?", "You should be aware that***.", "You're wrong,***.", "The truth is that***.", "Just admit that***!"]
-  // console.log(t);
+  let sentenceStarts = ["Didn't you know that***?", "***", "You should be aware that***.", "You're wrong,***.", "The truth is that***.", "***", "Just admit that***!", "I want you to know that***.", "You will soon admit that***!", "***", "Why won't you just say that***?", "I'm telling you that***!", "Why can't I get you to believe that***?", "Actually,***.", "Well, I heard that***.", "That's idiotic, because***.", "I actually find that really upsetting because***.", "Oh,***.", "OK,***.", "I disagree,***.", "Look now,***."]
 
   if (s == "right") {
     toAdd = [];
-    tags = [];
+    // tags = [];
     rightCorpus = '';
 
     // console.log("tags refreshed at " + tags.length);
 
     //check tags sent from last statement against the text metadata
     for (var i = 0; i < rightData.length; i++) {
-      for (var j = 0; j < t.length; j++) {
-        if (rightData[i].metadata.includes(t[j]) == true && tags.includes(t[j]) == false) {
-          tags.push(t[j]);
-          console.log(tags.length);
-        }
-      }
-
-      //keep the same tags if there's no overlap
-      if (tags.length < 1) {
-        tags = pastTopics;
-      } else {
-        pastTopics = [];
-        // console.log("past topics: " + pastTopics.length);
-      }
 
       //filter out articles based on metadata
       for (j = 0; j < tags.length; j++) {
         if (rightData[i].metadata.includes(tags[j]) == true && toAdd.includes(rightData[i].text) == false) {
           toAdd.push(rightData[i].text);
-
           // console.log("adding to corpus...");
-          rm.loadText(rightData[i].text);
         }
       }
     }
-    // console.log("number of articles: " + toAdd.length);
-    rightCorpus  = toAdd.join(' ');
+    console.log("number of articles: " + toAdd.length);
+
+    if (toAdd.length < 1) {
+      newTags = [];
+      for (var i = 0; i < tags.length; i++) {
+        if (metadata.indexOf(tags[i]) <= 110) {
+          if (!newTags.includes('immigration')) {
+            newTags.push('immigration');
+          }
+        } else if (metadata.indexOf(tags[i]) > 110 && metadata.indexOf(tags[i]) <= 163) {
+          if (!newTags.includes('covid')) {
+            newTags.push('covid');
+          }
+        } else {
+          if (!newTags.includes('climate')) {
+            newTags.push('climate');
+          }
+        }
+      }
+
+      for (var i = 0; i < rightData.length; i++) {
+
+        //filter out articles based on metadata
+        for (j = 0; j < newTags.length; j++) {
+          if (rightData[i].metadata.includes(newTags[j]) == true && toAdd.includes(rightData[i].text) == false) {
+            toAdd.push(rightData[i].text);
+            // console.log("adding to corpus...");
+            // rm.loadText(rightData[i].text);
+          }
+        }
+      }
+    }
+
+    for (var i = 0; i < toAdd.length; i++) {
+      rm.loadText(toAdd[i]);
+    }
 
     var start = sentenceStarts[Math.floor(Math.random() * sentenceStarts.length)];
     // console.log("writing sentences...");
@@ -211,31 +287,19 @@ function generateConvo(s, t) {
 
     //save the tags used to generate this round
     pastTopics = tags;
+
+    // console.log("past topics");
     // console.log(pastTopics);
 
   } else if (s == "left") {
     toAdd = [];
-    tags = [];
+    // tags = [];
     leftCorpus = '';
 
     // console.log("tags refreshed at " + tags.length);
 
     //check tags sent from last statement against the text metadata
     for (var i = 0; i < leftData.length; i++) {
-      for (var j = 0; j < t.length; j++) {
-        if (leftData[i].metadata.includes(t[j]) == true && tags.includes(t[j]) == false) {
-          tags.push(t[j]);
-          // console.log(tags.length);
-        }
-      }
-
-      //keep the same tags if there's no overlap
-      if (tags.length < 1) {
-        tags = pastTopics;
-      } else {
-        pastTopics = []
-        // console.log("past topics: " + pastTopics.length);
-      }
 
       //filter out articles based on metadata
       for (j = 0; j < tags.length; j++) {
@@ -243,16 +307,46 @@ function generateConvo(s, t) {
           toAdd.push(leftData[i].text);
 
           // console.log("adding to corpus...");
-          rm.loadText(leftData[i].text);
+          // rm.loadText(leftData[i].text);
         }
       }
     }
-    // console.log("number of articles: " + toAdd.length);
-    // leftCorpus  = toAdd.join(' ');
 
-    //generate new text
-    // rm.loadText(leftCorpus);
-    // console.log("writing sentences...");
+    if (toAdd.length < 1) {
+      newTags = [];
+      for (var i = 0; i < tags.length; i++) {
+        if (metadata.indexOf(tags[i]) <= 110) {
+          if (!newTags.includes('immigration')) {
+            newTags.push('immigration');
+          }
+        } else if (metadata.indexOf(tags[i]) > 110 && metadata.indexOf(tags[i]) <= 163) {
+          if (!newTags.includes('covid')) {
+            newTags.push('covid');
+          }
+        } else {
+          if (!newTags.includes('climate')) {
+            newTags.push('climate');
+          }
+        }
+      }
+
+      for (var i = 0; i < leftData.length; i++) {
+
+        //filter out articles based on metadata
+        for (j = 0; j < newTags.length; j++) {
+          if (leftData[i].metadata.includes(newTags[j]) == true && toAdd.includes(leftData[i].text) == false) {
+            toAdd.push(leftData[i].text);
+            // console.log("adding to corpus...");
+            // rm.loadText(rightData[i].text);
+          }
+        }
+      }
+    }
+
+    for (var i = 0; i < toAdd.length; i++) {
+      rm.loadText(toAdd[i]);
+    }
+
     var start = sentenceStarts[Math.floor(Math.random() * sentenceStarts.length)];
     // console.log("writing sentences...");
     let sentences = rm.generateSentences(1);
