@@ -97,7 +97,12 @@ a {
 
 #leftDia, #leftInput, #rightDia, #rightInput {
   font-family: Helvetica;
-  font-size: 16px;
+  font-size: 20px;
+}
+
+#leftInput, #rightInput {
+  font-family: Courier;
+  font-size: 15px;
 }
 
 .sendButton {
@@ -118,7 +123,7 @@ a {
   border-color: black;
   width: 90%;
   margin-bottom: 10px;
-  height: 400px;
+  height: 500px;
   padding:10px;
   overflow-y:auto;
 }
