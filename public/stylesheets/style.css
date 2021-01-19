@@ -13,6 +13,7 @@ body {
   margin:0px;
   background-color: purple;
   color:white;
+  overflow: hidden;
 }
 
 a {
@@ -32,7 +33,8 @@ a {
   color:white;
   display:inline-block;
   margin-right: 0px;
-  padding:5%;
+  padding-top:3%;
+  padding-left: 3.5%;
   height:300px;
 }
 
@@ -50,7 +52,8 @@ a {
   color:white;
   display: inline-block;
   margin-left: 0px;
-  padding: 5%;
+  padding-top: 3%;
+  padding-left: 3.5%;
 }
 
 #footer {
@@ -97,7 +100,12 @@ a {
 
 #leftDia, #leftInput, #rightDia, #rightInput {
   font-family: Helvetica;
-  font-size: 16px;
+  font-size: 20px;
+}
+
+#leftInput, #rightInput {
+  font-family: Courier;
+  font-size: 15px;
 }
 
 .sendButton {
@@ -118,7 +126,11 @@ a {
   border-color: black;
   width: 90%;
   margin-bottom: 10px;
-  height: 400px;
+  height: 500px;
   padding:10px;
   overflow-y:auto;
+}
+
+textarea {
+  resize: none;
 }
