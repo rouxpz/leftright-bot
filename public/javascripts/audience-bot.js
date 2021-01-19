@@ -178,6 +178,7 @@ function generateMarkov(text, data, metadata) {
 
   // let toSend = sentenceStarts[index].replace('***', ' ' + generatedText[0]);
   let toSend = generatedText[0];
+  toSend = toSend.replace("“", '').replace("”", '');
 
   return(toSend);
 }
