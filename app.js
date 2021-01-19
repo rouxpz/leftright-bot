@@ -21,8 +21,8 @@ const client = new Client({
 client.connect();
 
 let urlBase = 'https://roopavasudevan.com/dump/bot-json/';
-let leftFiles = ['nick.json'];
-let rightFiles = ['kimberly.json'];
+let leftFiles = ['nick.json', 'nick-oped.json'];
+let rightFiles = ['kimberly.json', 'kimberly-oped.json'];
 let metadata = [];
 
 let rightData = [];
