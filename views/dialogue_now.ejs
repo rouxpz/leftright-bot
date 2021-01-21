@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya&display=swap" rel="stylesheet">
+  <title>A Conversation</title>
+</head>
+
+<body onkeypress="triggerDialogue()">
+  <div class="parent">
+    <div id="leftDialogue" class="dialogue-window-main">
+      <div id="leftDia" class="dialogue-chat-window">
+        <h1 class="connection-status" style="font-size: 16px;"><i> Nick </i>is now connected.</p>
+      </div>
+
+      <!-- <textarea readonly id="nickInput" name="nickInput" rows="1" cols="45"></textarea>
+        <button class="sendButton" type="button" name="button">Send</button> -->
+    </div>
+
+    <div id="rightDialogue" class="dialogue-window-main">
+      <div id="rightDia" class="dialogue-chat-window">
+        <h1 class="connection-status" style="font-size: 16px;"><i> Kimberly </i>is now connected.</p>
+      </div>
+      <!-- <textarea readonly id="kimInput" name="nickInput" rows="1" cols="45"></textarea> <button class="sendButton" type="button" name="button">Send</button> -->
+    </div>
+  </div>
+
+
+
+  <script type="text/javascript">
+    var voices = window.speechSynthesis.getVoices();
+
+    let dialogue = [
+      'Hi, I’m Kimberly.',
+      'Hi there.',
+      'Who do I have the pleasure of speaking with?', 'I’m Nick.',
+      'We’re in trouble – I mean, our democracy’s in trouble, so we’ve got a fight on that front. We made a great step forward to do that by rejecting the Orange Menace, and moving forward with a new presidency — one committed to doing the right things, all under the umbrella of restoring the soul of our country.',
+      'That’s the puerile reference of the pathetic climate change czar John Kerry.',
+      'What a hypocrite - leading a luxurious lifestyle of yachts and private planes and advocating climate reform.',
+      'It’s a common thing - they want the rules not to apply to them, but of course, the rest of us need to destroy our economy in order to save the weather.',
+      'What nonsense? Covid-19 may only be the beginning of global pandemics – a future scenario in which climate change may also play a role.',
+      'The media are hard at work weaving a web of confusion, misinformation, and conspiracy surrounding the Chinese coronavirus pandemic.',
+      'For politicians in the US and western Europe seeking to distract from their own disastrous mismanagement of the Covid-19 pandemic, the idea of “China” has become a convenient scapegoat.',
+      'I have no ill-will against the Chinese people. But the problem lies with the appalling hygiene conditions in Chinese wildlife markets and the customary diet of bats and pangolins.',
+      'Let’s take the claim that the novel coronavirus was caused by a culturally peculiar fondness for eating pangolins.',
+      'Though it is true that pangolin scales and meat are advertised as a sort of folk medicine in mainland China, statistics suggest the real key variable are the effects of globalisation, which have enriched the country’s business classes.',
+      'Prices for the animal have climbed from $14 a kilo in 1994 to more than $600 today, while illegal shipments confiscated at the border regularly exceed 10 tonnes. Customers ordering wildlife often do so in order to flaunt their wealth or to celebrate a good day on the stock market, although they remain a minority.  Most Chinese citizens support strict limits, if not a ban, on wildlife consumption. Resurgent pangolin consumption is thus a result of economic liberalisation in China – which the US championed – not simply of traditional culture.',
+      'What invisible hand? The hand of the state is more visible than ever. Even when the current lockdown is lifted, it is possible that heavy-handed control by the state will remain. Tough coronavirus crackdowns will turn our lives into Covid-1984 – say goodbye to freedom and wave hello to CCTV drones.',
+      'We had a fine government under our dear President.',
+      'What a disgrace! Now that we got rid of him maybe we can focus on our many real local and global problems.',
+      'How many more businesses have to close? how many more children must be kept home from school? how many more Americans have to die before those truly responsible pay the price?',
+      'Future risks are not easy to foretell, but climate change hits hard on several fronts that matter to when and where pathogens appear, including temperature and rainfall patterns.  To help limit the risk of infectious diseases, we should do all we can to vastly reduce greenhouse gas emissions and limit global warming to 1.5 degrees.',
+      'Increasing the amount of CO2 in the atmosphere from 0.03 per cent to 0.04 percent has not caused and is not causing catastrophic runaway global warming. Dishonest references to “97 per cent of scientists” equate a mild warming influence, which most scientists agree with and more importantly can demonstrate, with a catastrophic warming influence – which most don’t agree with and none can demonstrate.',
+      'I call the climate change industry a hoax - That’s because, on any objective level it is. I don’t mean that all the scientists and businesses and politicians promoting it are abject liars — just most of them.'
+    ]
+
+    let speakers = ['Kimberly', 'Nick', 'Kimberly', 'Nick', 'Kimberly', 'Kimberly', 'Kimberly', 'Kimberly', 'Nick',
+      'Kimberly', 'Nick', 'Kimberly', 'Nick', 'Nick', 'Nick', 'Kimberly', 'Kimberly', 'Nick', 'Kimberly', 'Nick',
+      'Kimberly',
+      'Kimberly'
+    ]
+
+    let status = -1;
+
+    let rightBox = document.getElementById('rightDia');
+    let leftBox = document.getElementById('leftDia');
+
+    function triggerDialogue() {
+      //console.log(dialogue[status]);
+      // console.log(speakers[status]);
+      var msg;
+      status++;
+      var count = 1;
+      var bot_voice;
+
+      voices = window.speechSynthesis.getVoices();
+
+
+      if (speakers[status] == "Kimberly") {
+        bot_voice = 40;
+        dialogueSplit_kim = dialogue[status].split(/(?<=\.\s)/);
+        console.log("Kimberly: " + dialogueSplit_kim);
+
+        leftBox.innerHTML = '<strong>Nick:</strong> ' + '<p> </p>';
+        //rightBox.innerHTML += '<strong>Kimberly:</strong> ' + dialogueSplit[0];
+        rightBox.innerHTML = '<strong>Kimberly:</strong>' + '<p>' + dialogueSplit_kim[0] + '</p>';
+
+
+
+        if (dialogueSplit_kim.length > 1 && dialogueSplit_kim[dialogueSplit_kim.length - 1] != '') {
+          var addText_kim = setInterval(function () {
+            rightBox.innerHTML = rightBox.innerHTML + '<p>' + dialogueSplit_kim[count] + '</p>';
+            if (count < dialogueSplit_kim.length - 1) {
+              count++;
+            } else {
+              rightBox.innerHTML += '<br>';
+              clearInterval(addText_kim);
+            }
+          }, 5000);
+        } else {
+          rightBox.innerHTML += '<br>';
+        }
+        rightBox.scrollTop = rightBox.scrollHeight;
+      } else if (speakers[status] == "Nick") {
+        bot_voice = 0;
+        dialogueSplit_nick = dialogue[status].split(/(?<=\.\s)/);
+        console.log("Nick: " + dialogueSplit_nick);
+
+        rightBox.innerHTML = '<strong>Kimberly:</strong> ' + '<p> </p>';
+        //leftBox.innerHTML += '<strong>Nick:</strong> ' + dialogue[status] + '<br><br>';
+        leftBox.innerHTML = '<strong>Nick:</strong> ' + '<p>' + dialogueSplit_nick[0] + '</p>';
+
+        if (dialogueSplit_nick.length > 1 && dialogueSplit_nick[dialogueSplit_nick.length - 1] != '') {
+          var addText_nick = setInterval(function () {
+            leftBox.innerHTML = leftBox.innerHTML + '<p>' + dialogueSplit_nick[count] + '</p>';
+            if (count < dialogueSplit_nick.length - 1) {
+              count++;
+            } else {
+              leftBox.innerHTML += '<br>';
+              clearInterval(addText_nick);
+            }
+          }, 5000);
+        } else {
+          leftBox.innerHTML += '<br>';
+        }
+
+
+        leftBox.scrollTop = leftBox.scrollHeight;
+      }
+      msg = new SpeechSynthesisUtterance(dialogue[status]);
+      msg.voice = voices[bot_voice]
+      window.speechSynthesis.speak(msg);
+    }
+  </script>
+</body>
+
+</html>

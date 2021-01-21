@@ -9,10 +9,11 @@
 }
 
 body {
-  font: 25px Helvetica, Arial, sans-serif;
+  font-size:24px;
+  font-family: 24px Helvetica, Arial, sans-serif;
   margin:0px;
-  background-color: purple;
-  color:white;
+  background-color: black;
+  color:rgb(255, 255, 255);
 }
 
 a {
@@ -26,25 +27,16 @@ a {
   padding-top: 15%;
 } */
 
-#leftBot, #leftDialogue {
+#leftBot {
   flex: 2;
   background-color:blue;
   color:white;
   display:inline-block;
   margin-right: 0px;
   padding:5%;
-  height:300px;
 }
 
-#leftBot {
-  height:300px;
-}
-
-#leftDialogue {
-  height:600px;
-}
-
-#rightBot, #rightDialogue {
+#rightBot{
   flex:2;
   background-color:red;
   color:white;
@@ -53,8 +45,13 @@ a {
   padding: 5%;
 }
 
+#leftBot, #rightBot {
+  height:300px;
+}
+
+
 #footer {
-  background-color: purple;
+  background-color: rgb(0, 0, 0);
   color:white;
   margin: 0px;
   text-align: center;
@@ -95,30 +92,116 @@ a {
   margin-left: 40px;
 }
 
-#leftDia, #leftInput, #rightDia, #rightInput {
-  font-family: Helvetica;
-  font-size: 16px;
-}
-
 .sendButton {
   padding: 5px;
   display: inline-block;
   vertical-align: top;
 }
 
-#leftInput, #rightInput {
-  margin-top: 5px;
-  display: inline-block;
+/*--------------------------------for dialogue page only ------------*/
+
+#dialogue-window-wrapper {
+ margin-left:auto;
+ margin-right:auto;
+ width: 55vw;
+ /*background: rgb(156, 160, 156);*/
+ background: black;
+ height:100vh;
+ display: flex;
+ flex-direction: column-reverse;
+ align-items: stretch;
+ justify-content: end;
+}
+#dialogue-window-status {
+ width: 100%;
+ height:auto;
+}
+.connection-status {
+  color: white;
+  font-family: 24px 'Alegreya', serif;
+  line-height: 30px;
+  text-align: center;
+  /*
+  animation-name: fadeInOut;
+  animation-duration: 10s;
+  opacity: 0;
+  */
+  margin-top:1vh;
+  margin-bottom: 1vh;
 }
 
-#leftDia, #rightDia {
-  color: black;
-  background-color: white;
-  border-style: solid;
-  border-color: black;
-  width: 90%;
-  margin-bottom: 10px;
-  height: 400px;
-  padding:10px;
-  overflow-y:auto;
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.dialogue-window-main {
+margin-left:auto;
+margin-right:auto;
+width:60vw;
+background-color: darkblue;
+display: flex;
+align-items: center;
+}
+
+
+.dialogue-chat-window {
+  background-color: black;
+  /*
+  border-style: dashed;
+  border-width: 1px;
+  border-color: rgb(255, 255, 255);
+  */
+  margin-left:auto;
+  margin-right:auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+}
+.leftDia {
+  width: auto;
+  margin-right:40%;
+}
+.rightDia {
+  width:auto;
+  margin-left:40%;
+}
+.leftDia strong {
+  color:lightskyblue;
+  display: block;
+  text-align: left;
+}
+
+.leftDia p {
+  display: block;
+  float:left;
+}
+.rightDia strong {
+  color:rgb(223, 60, 60);
+  display: block;
+  text-align: right;
+}
+
+.rightDia p {
+  display: block;
+  float:right;
+}
+
+
+.dialogue-chat-window p {
+  font-family: 32px 'Alegreya', serif !important;
+  line-height: 32px;
+  color:white;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
 }
