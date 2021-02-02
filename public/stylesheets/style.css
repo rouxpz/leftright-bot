@@ -9,9 +9,8 @@
 }
 
 body {
-  font: 25px Helvetica, Arial, sans-serif;
   margin:0px;
-  background-color: purple;
+  background-color: black;
   color:white;
   overflow: hidden;
 }
@@ -29,35 +28,51 @@ a {
 
 #leftBot, #leftDialogue {
   flex: 2;
-  background-color:blue;
   color:white;
   display:inline-block;
   margin-right: 0px;
-  padding-top:3%;
-  padding-left: 3.5%;
-  height:300px;
+  /* padding-top:3%;
+  padding-left: 2.5%; */
+  /* height:300px; */
 }
 
 #leftBot {
-  height:300px;
+  height:470px;
+  background-color:#045bbc;
+  padding: 3%;
+  font-size: 30px;
 }
 
 #leftDialogue {
-  height:600px;
+  height:620px;
+  background-color:black;
+  padding-top:3%;
+  padding-left: 2.5%;
+}
+
+#rightBot {
+  background-color:#bb2e34;
+  padding: 3%;
+  font-size: 30px;
+}
+
+#rightDialogue {
+  background-color:black;
+  padding-top:3%;
+  padding-left: 2.5%;
 }
 
 #rightBot, #rightDialogue {
   flex:2;
-  background-color:red;
   color:white;
   display: inline-block;
   margin-left: 0px;
-  padding-top: 3%;
-  padding-left: 3.5%;
+  /* padding-top: 3%;
+  padding-left: 3.5%; */
 }
 
 #footer {
-  background-color: purple;
+  background-color: black;
   color:white;
   margin: 0px;
   text-align: center;
@@ -99,7 +114,7 @@ a {
 }
 
 #leftDia, #leftInput, #rightDia, #rightInput {
-  font-family: Helvetica;
+  font-family: 'Playfair Display', serif;
   font-size: 20px;
 }
 
@@ -112,6 +127,8 @@ a {
   padding: 5px;
   display: inline-block;
   vertical-align: top;
+  background-color: #999999;
+  border-radius: 5px;
 }
 
 #leftInput, #rightInput {
@@ -119,11 +136,27 @@ a {
   display: inline-block;
 }
 
-#leftDia, #rightDia {
+#leftDia {
   color: black;
-  background-color: white;
+  background-color: #cde2fb;
   border-style: solid;
-  border-color: black;
+  border-color: #045bbc;
+  border-style: solid;
+  border-width: 5px;
+  width: 90%;
+  margin-bottom: 10px;
+  height: 500px;
+  padding:10px;
+  overflow-y:auto;
+}
+
+#rightDia {
+  color: black;
+  background-color: #f5d6d7;
+  border-style: solid;
+  border-color: #bb2e34;
+  border-style: solid;
+  border-width: 5px;
   width: 90%;
   margin-bottom: 10px;
   height: 500px;
@@ -133,4 +166,18 @@ a {
 
 textarea {
   resize: none;
+}
+
+.kimName {
+  font-weight: 600;
+  color: #bb2e34;
+}
+
+.nickName {
+  font-weight: 600;
+  color: #045bbc;
+}
+
+.hidden {
+  display: none;
 }

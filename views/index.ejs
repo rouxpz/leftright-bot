@@ -21,11 +21,11 @@
       </div>
   </div>
   <div id="footer">
-    <button id="contribute" type="button" name="button" onclick="inputText()">I want to talk</button>
+    <button id="contribute" type="button" name="button" onclick="inputText()">Pause</button>
     <form class="submitForm" action="/" method="post">
-      <p>Contribute to the conversation:</p>
-      <input id="userInput" type="textbox" size="50" height="50" name="userInput" value=""><br>
-      <input id="submit" onclick="on = true;" type="submit" name="submit" value="Submit">
+      <p class="hidden">Contribute to the conversation:</p>
+      <input class="hidden" id="userInput" type="textbox" size="50" height="50" name="userInput" value=""><br>
+      <input id="submit" onclick="on = true;" type="submit" name="submit" value="Restart">
     </form>
   </div>
   <script src="/socket.io/socket.io.js"></script>
@@ -76,9 +76,16 @@
     function inputText() {
       // clearTimeout(speaking);
       // alert("turned off");
-      on = false;
-      document.getElementsByClassName('submitForm')[0].style.display="block";
-      document.getElementById('contribute').style.display = 'none';
+      if (on == true) {
+        on = false;
+        document.getElementById("contribute").innerHTML = 'Restart';
+      } else {
+        generateNewText();
+        on = true;
+        document.getElementById("contribute").innerHTML = 'Pause';
+      }
+      // document.getElementsByClassName('submitForm')[0].style.display="block";
+      // document.getElementById('contribute').style.display = 'none';
     }
 
     function checkIfSpeaking() {

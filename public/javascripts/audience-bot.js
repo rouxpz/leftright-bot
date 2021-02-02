@@ -5,6 +5,9 @@ let rightData = [];
 let rightMetaData = [];
 let prevTopics = ['coronavirus'];
 
+let startedRight = false;
+let startedLeft = false;
+
 let sentenceStarts = ["Didn't you know that***?", "***", "You should be aware that***.", "You're wrong,***.", "The truth is that***.", "***", "Just admit that***!", "I want you to know that***.", "You will soon admit that***!", "***", "Why won't you just say that***?", "I'm telling you that***!", "Why can't I get you to believe that***?", "Actually,***.", "Well, I heard that***.", "That's idiotic, because***.", "I actually find that really upsetting because***.", "Oh,***.", "OK,***.", "I disagree,***.", "Look now,***."]
 
 let globalMetadata = [];
@@ -52,10 +55,10 @@ function sendDialogue(side) {
   let userInput = document.getElementById(side+'Input').value;
   if (userInput != '') {
     if (side == 'left') {
-      leftBox.innerHTML += "<strong>Me:</strong> " + userInput + '<br><br>';
+      leftBox.innerHTML += "<strong>YOU:</strong> " + userInput + '<br><br>';
       leftBox.scrollTop = leftBox.scrollHeight;
     } else {
-      rightBox.innerHTML += "<strong>Me:</strong> " + userInput + '<br><br>';
+      rightBox.innerHTML += "<strong>YOU:</strong> " + userInput + '<br><br>';
       rightBox.scrollTop = rightBox.scrollHeight;
     }
 
@@ -81,9 +84,12 @@ function generateResponse(input, side) {
   //add additional responses
 
   if (side == 'left') {
-    if (input.indexOf('hello') != -1 || input.startsWith('hi') == true) {
+    if (startedLeft == false) {
       response = "Hi, I'm Nick. Nice to meet you."
+      startedLeft = true;
     } else if (input.indexOf('nice to meet you') != -1) {
+      response = "What would you like to talk about?"
+    } else if (input.indexOf('hello') != -1 || input.startsWith('hi') == true){
       response = "What would you like to talk about?"
     } else if (input.indexOf('how are you') != -1) {
       response = "Better now that Trump is out of office!"
@@ -100,14 +106,17 @@ function generateResponse(input, side) {
       // response = "Can you tell me more?"
     }
     setTimeout(function() {
-      leftBox.innerHTML += "<strong>Nick:</strong> " + response + '<br><br>';
+      leftBox.innerHTML += "<strong><span class='nickName'>NICK:</span></strong> " + response + '<br><br>';
       leftBox.scrollTop = leftBox.scrollHeight;
     }, 500);
 
   } else {
-    if (input.indexOf('hello') != -1 || input.startsWith('hi') == true) {
+    if (startedRight == false) {
       response = 'Hello, my name is Kimberly. '
+      startedRight = true;
     } else if (input.indexOf('nice to meet you') != -1) {
+      response = "What would you like to talk about?"
+    } else if (input.indexOf('hello') != -1 || input.startsWith('hi') == true){
       response = "What would you like to talk about?"
     } else if (input.indexOf('how are you') != -1) {
       response = "Not good. The radical left is going to destroy the country!"
@@ -123,7 +132,7 @@ function generateResponse(input, side) {
       // response = "I'd like to hear more."
     }
     setTimeout(function() {
-      rightBox.innerHTML += "<strong>Kimberly:</strong> " + response + '<br><br>';
+      rightBox.innerHTML += "<strong><span class='kimName'>KIMBERLY:</span></strong> " + response + '<br><br>';
       rightBox.scrollTop = rightBox.scrollHeight;
     }, 500);
 
