@@ -136,12 +136,12 @@ app.post('/', (req, res) => {
 
   // console.log(side);
   //parse current fragment for topics, either from last thing said or from user input
-  if (req.body.userInput != '') {
-    currentStatement = req.body.userInput;
-    pastData = {leftData:'', rightData:'', voice:''};
-  } else {
+  // if (req.body.userInput != '') {
+  //   currentStatement = req.body.userInput;
+  //   pastData = {leftData:'', rightData:'', voice:''};
+  // } else {
     currentStatement = currentStatement;
-  }
+  // }
 
   // console.log(currentStatement);
   currentStatement = currentStatement.toLowerCase().replace('.', '').replace(',', '');
